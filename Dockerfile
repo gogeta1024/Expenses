@@ -1,14 +1,27 @@
-# Chọn base image chứa Java
-FROM openjdk:17-jdk-slim
+# Sử dụng OpenJDK để build ứng dụng
+FROM maven:3.8.6-openjdk-17-slim AS build
 
-# Cài đặt thư mục làm việc trong container
+# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Sao chép file jar từ target vào thư mục làm việc trong container
-COPY target/Expenses-0.0.1-SNAPSHOT.jar app.jar
+# Sao chép toàn bộ mã nguồn vào container
+COPY . .
 
-# Mở cổng mà Spring Boot sử dụng (thường là 8080)
+# Build ứng dụng bằng Maven
+RUN mvn clean package -DskipTests
+
+# Sử dụng OpenJDK để chạy ứng dụng
+FROM openjdk:17-jdk-slim
+
+# Thiết lập thư mục làm việc
+WORKDIR /app
+
+# Sao chép tệp JAR từ giai đoạn build vào container
+COPY --from=build /app/target/*.jar app.jar
+
+# Mở cổng 8080
 EXPOSE 8080
 
-# Chạy ứng dụng Spring Boot
+# Chạy ứng dụng
 ENTRYPOINT ["java", "-jar", "app.jar"]
+

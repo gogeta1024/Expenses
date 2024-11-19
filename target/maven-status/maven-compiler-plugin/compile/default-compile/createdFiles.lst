@@ -1,6 +1,0 @@
-org\example\expenses\entity\FoodCost.class
-org\example\expenses\ExpensesApplication.class
-org\example\expenses\entity\FoodCost$FoodCostBuilder.class
-org\example\expenses\repository\FoodRepository.class
-org\example\expenses\controller\HomeController.class
-org\example\expenses\dto\FoodDTO.class

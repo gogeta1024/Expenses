@@ -1,0 +1,14 @@
+# Bỏ qua thư mục build tools
+.idea
+.vscode
+*.iml
+
+# Bỏ qua thư mục chứa file tạm thời
+target/
+build/
+
+# Bỏ qua tệp không cần thiết
+*.log
+*.tmp
+node_modules
+.DS_Store
