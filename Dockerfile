@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y maven
 # Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Sao chép toàn bộ mã nguồn vào container
+# Sao chép mã nguồn vào container (bao gồm pom.xml và mã nguồn của bạn)
 COPY . .
 
 # Build ứng dụng bằng Maven
