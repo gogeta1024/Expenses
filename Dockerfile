@@ -1,29 +1,29 @@
-# Sử dụng OpenJDK 17
+# Use OpenJDK 17
 FROM openjdk:17-slim AS build
 
-# Cài đặt Maven
+# Install Maven
 RUN apt-get update && apt-get install -y maven
 
-# Thiết lập thư mục làm việc
+# Set working directory
 WORKDIR /app
 
-# Sao chép toàn bộ mã nguồn vào container
+# Copy application source code
 COPY . .
 
-# Build ứng dụng bằng Maven
+# Build application with Maven
 RUN mvn clean package -DskipTests
 
-# Sử dụng OpenJDK để chạy ứng dụng
+# Use OpenJDK to run the application
 FROM openjdk:17-jdk-slim
 
-# Thiết lập thư mục làm việc
+# Set working directory
 WORKDIR /app
 
-# Sao chép tệp JAR từ giai đoạn build vào container
+# Copy the jar file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Mở cổng 8080
+# Expose port 8080
 EXPOSE 8080
 
-# Chạy ứng dụng
+# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
