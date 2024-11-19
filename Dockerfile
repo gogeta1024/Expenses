@@ -1,5 +1,8 @@
-# Sử dụng OpenJDK để build ứng dụng
-FROM maven:3.8.6-openjdk-17-slim AS build
+# Sử dụng OpenJDK 17
+FROM openjdk:17-slim AS build
+
+# Cài đặt Maven
+RUN apt-get update && apt-get install -y maven
 
 # Thiết lập thư mục làm việc
 WORKDIR /app
