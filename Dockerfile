@@ -1,8 +1,5 @@
 # Sử dụng OpenJDK 17
-FROM openjdk:17-slim AS build
-
-# Cài đặt Maven
-RUN apt-get update && apt-get install -y maven
+FROM openjdk:17-slim
 
 # Thiết lập thư mục làm việc
 WORKDIR /app
@@ -10,27 +7,20 @@ WORKDIR /app
 # Sao chép toàn bộ mã nguồn vào container
 COPY . .
 
-# Build ứng dụng bằng Maven
-RUN mvn clean package -DskipTests
+# Cài đặt Maven và build ứng dụng
+RUN apt-get update && apt-get install -y maven && mvn clean package -DskipTests
 
-# Sử dụng OpenJDK để chạy ứng dụng
-FROM openjdk:17-jdk-slim
-
-# Thiết lập biến môi trường
+# Thiết lập các biến môi trường (nếu cần)
 ENV DB_HOST=localhost
 ENV DB_PORT=5432
 ENV DB_USER=postgres
 ENV DB_PASSWORD=admin
 
-# Thiết lập thư mục làm việc
-WORKDIR /app
-
-# Sao chép tệp JAR từ giai đoạn build vào container
-COPY --from=build /app/target/*.jar app.jar
+# Sao chép tệp JAR đã build vào container
+COPY target/*.jar app.jar
 
 # Mở cổng 8080
 EXPOSE 8080
 
 # Chạy ứng dụng
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
