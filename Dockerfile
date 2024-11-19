@@ -16,6 +16,12 @@ RUN mvn clean package -DskipTests
 # Sử dụng OpenJDK để chạy ứng dụng
 FROM openjdk:17-jdk-slim
 
+# Thiết lập biến môi trường
+ENV DB_HOST=localhost
+ENV DB_PORT=5432
+ENV DB_USER=postgres
+ENV DB_PASSWORD=admin
+
 # Thiết lập thư mục làm việc
 WORKDIR /app
 
