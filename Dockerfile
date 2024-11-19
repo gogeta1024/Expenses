@@ -1,5 +1,8 @@
 # Sử dụng OpenJDK 17
-FROM openjdk:17-slim
+FROM openjdk:17-slim AS build
+
+# Cài đặt Maven
+RUN apt-get update && apt-get install -y maven
 
 # Thiết lập thư mục làm việc
 WORKDIR /app
@@ -7,17 +10,26 @@ WORKDIR /app
 # Sao chép toàn bộ mã nguồn vào container
 COPY . .
 
-# Cài đặt Maven và build ứng dụng
-RUN apt-get update && apt-get install -y maven && mvn clean package -DskipTests
+# Build ứng dụng bằng Maven
+RUN mvn clean package -DskipTests
 
-# Thiết lập các biến môi trường (nếu cần)
+# Kiểm tra thư mục target
+RUN ls -l /app/target
+
+# Sử dụng OpenJDK để chạy ứng dụng
+FROM openjdk:17-jdk-slim
+
+# Thiết lập biến môi trường
 ENV DB_HOST=localhost
 ENV DB_PORT=5432
 ENV DB_USER=postgres
 ENV DB_PASSWORD=admin
 
-# Sao chép tệp JAR đã build vào container
-COPY target/*.jar app.jar
+# Thiết lập thư mục làm việc
+WORKDIR /app
+
+# Sao chép tệp JAR từ giai đoạn build vào container
+COPY --from=build /app/target/*.jar app.jar
 
 # Mở cổng 8080
 EXPOSE 8080
