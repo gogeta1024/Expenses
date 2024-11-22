@@ -1,0 +1,5 @@
+[build]
+command = "./mvnw clean package"
+
+[start]
+command = "java -jar target/expenses.jar"
