@@ -1,29 +1,27 @@
-# Use OpenJDK 17
-FROM openjdk:17-slim AS build
+# Giai đoạn 1: Build Stage
+FROM maven:3.9.5-eclipse-temurin-17 AS build
 
-# Install Maven
-RUN apt-get update && apt-get install -y maven
-
-# Set working directory
+# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Copy application source code
-COPY . .
+# Chỉ copy các tệp cần thiết để tận dụng cache của Docker
+COPY pom.xml ./
+COPY src ./src
 
-# Build application with Maven
+# Build ứng dụng
 RUN mvn clean package -DskipTests
 
-# Use OpenJDK to run the application
-FROM openjdk:17-jdk-slim
+# Giai đoạn 2: Run Stage
+FROM eclipse-temurin:17-jdk-slim
 
-# Set working directory
+# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Copy the jar file from the build stage
+# Sao chép file JAR từ giai đoạn build
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port 8080
+# Mở cổng ứng dụng
 EXPOSE 8080
 
-# Run the application
+# Lệnh chạy ứng dụng
 ENTRYPOINT ["java", "-jar", "app.jar"]
