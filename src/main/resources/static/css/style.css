@@ -1,0 +1,40 @@
+        .container{
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            grid-template-rows: auto 1fr auto;
+            grid-template-areas: ' header header'
+                                'sidebar content'
+                                'footer footer';
+        }
+        header{
+            border: 1px solid black;
+            grid-area: header;
+            text-align: center;
+            height: 80px; /* Chiều cao cố định */
+        }
+        .sidebar{
+            border: 1px solid black;
+            grid-area: sidebar;
+        }
+        .sidebar > ul{
+            list-style-type: none;
+        }
+        .content{
+            border: 1px solid black;
+            padding: 15px;
+            grid-area: content;
+        }
+        footer{
+            border: 1px solid black;
+            grid-area: footer;
+            text-align: center;
+            height: 80px; /* Chiều cao cố định */
+        }
+
+.button{
+    display: flex;               /* Sử dụng flexbox để căn chỉnh */
+    justify-content: left;     /* Đặt các button ở giữa */
+    gap: 15px;                   /* Khoảng cách đều giữa các button */
+    margin: 20px;            /* Khoảng cách với phần tử khác */
+}
+

@@ -3,57 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Document</title>
-    <style>
-        .container{
-            display: grid;
-            grid-template-columns: 1fr 3fr;
-            grid-template-rows: repeat(3,1fr);
-            grid-template-areas: ' header header'
-                                'sidebar content'
-                                'footer footer';
-        }
-        header{
-            border: 1px solid black;
-            grid-area: header;
-            text-align: center;
-        }
-        .sidebar{
-            border: 1px solid black;
-            grid-area: sidebar;
-        }
-        .sidebar > ul{
-            list-style-type: none;
-        }
-        .content{
-            border: 1px solid black;
-            grid-area: content;
-        }
-        footer{
-            border: 1px solid black;
-            grid-area: footer;
-            text-align: center;
-        }
-    </style>
+    <title>My App</title>
+    <link href="/css/style.css" rel="stylesheet" >
 </head>
 <body>
 
 <div class="container">
-    <header>EURO CHAMPIONSHIP</header>
+    <header>LIVING COST</header>
     <div class="sidebar">
         Menu:
         <ul>
-            <li> <a href="#">Teams Management</a> </li>
-            <li> <a href="#">Information Group</a> </li>
-            <li> <a href="#">Information Charts</a> </li>
-            <li> <a href="#">Who’s Champion?</a> </li>
+            <li> <a href="/daily">Daily Management</a> </li>
+            <li> <a href="#">House Management</a> </li>
+            <li> <a href="#">Total Management</a> </li>
         </ul>
     </div>
     <div class="content">
-        WELCOME TO EURO FOOTBALL CHAMPION
+        WELCOME TO MY APP
     </div>
     <footer>
-        Base on Spring Framework
+        VEGETTO BLUE
     </footer>
 </div>
 
