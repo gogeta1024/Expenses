@@ -2,8 +2,11 @@ package org.example.expenses.service;
 
 import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.entity.DailyCost;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 public interface DailyService {
@@ -22,11 +25,23 @@ public interface DailyService {
     void save(DailyCost dailyCost);
 
     List<DailyCost> getAll();
-    List<DailyCost> getByDate(LocalDate purchaseDate);
+    List<DailyCost> findByDate(LocalDate purchaseDate);
     List<DailyCost> findByMonthAndYear(int month, int year);
+    List<DailyCost> findBySupermarket(String supermarket);
+    List<DailyCost> findByType(String type);
+    List<DailyCost> findByName(String name);
+
     void deleteByID(Long id);
+    DailyCost findByID(Long id);
 
 
-    Integer totalAmount();
+    Integer totalAmount(List<DailyCost> dailyCostList);
 
+    Integer totalType(List<DailyCost> dailyCostList,String type);
+
+    List<DailyCost> filterByDaily(LocalDate purchaseDate, YearMonth yearMonth, String supermarket, String type, String name);
+
+    Page<DailyCost> getPaginatedDailyList(Pageable pageable);
+
+    Page<DailyCost> filterByDaily(String purchaseDate, String month, String supermarket, String type, String name, Pageable pageable);
 }

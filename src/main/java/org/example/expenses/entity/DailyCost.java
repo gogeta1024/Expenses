@@ -21,7 +21,7 @@ import java.time.LocalDate;
         @GeneratedValue(strategy = GenerationType.IDENTITY) // Tự động tăng ID
         private Long id;
 
-        @Column(name = "purchase_date", nullable = false) // Ngày tháng mua
+        @Column(name = "purchase_date") // Ngày tháng mua
         private LocalDate purchaseDate;
 
         @Column(name = "supermarket", length = 100) // Tên siêu thị
