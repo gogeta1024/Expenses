@@ -19,7 +19,7 @@ public interface DailyRepository extends JpaRepository<DailyCost, Long> {
     List<DailyCost> findByPurchaseDate(LocalDate purchaseDate);
 
     // Tìm kiếm tất cả bản ghi trong một tháng và năm cụ thể
-    @Query("SELECT dc FROM DailyCost dc WHERE EXTRACT(MONTH FROM dc.purchaseDate) = :month AND EXTRACT(YEAR FROM dc.purchaseDate) = :year")
+    @Query("SELECT dc FROM DailyCost dc WHERE EXTRACT(MONTH FROM dc.purchaseDate) = :month AND EXTRACT(YEAR FROM dc.purchaseDate) = :year ORDER BY dc.purchaseDate DESC")
     List<DailyCost> findByMonthAndYear(int month, int year);
 
     //Tim kiem theo ten sieu thi
@@ -41,7 +41,7 @@ public interface DailyRepository extends JpaRepository<DailyCost, Long> {
             "AND (:type IS NULL OR d.type LIKE %:type%) " +
             "AND (:name IS NULL OR d.name LIKE %:name%)")
     Page<DailyCost> findByCriteria(
-            @Param("purchaseDate") String purchaseDate,  // Chuyển thành String nếu cần
+            @Param("purchaseDate") String purchaseDate,
             @Param("month") String month,
             @Param("supermarket") String supermarket,
             @Param("type") String type,

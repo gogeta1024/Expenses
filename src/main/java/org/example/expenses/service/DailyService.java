@@ -13,13 +13,13 @@ public interface DailyService {
     static DailyDTO convertToDTO(DailyCost dailyCost)
     {
         return new DailyDTO(dailyCost.getId(),dailyCost.getPurchaseDate(),dailyCost.getSupermarket(),dailyCost.getType(),
-                dailyCost.getName(),dailyCost.getWeight(),dailyCost.getPrice(),dailyCost.getQuantity());
+                dailyCost.getName(),dailyCost.getWeight(),dailyCost.getPrice(),dailyCost.getQuantity(),dailyCost.getMemo());
     }
 
     static DailyCost convertToEntity(DailyDTO dailyDTO)
     {
         return new DailyCost( dailyDTO.getId(),dailyDTO.getPurchaseDate(),dailyDTO.getSupermarket(),dailyDTO.getType(),
-                dailyDTO.getName(),dailyDTO.getWeight(),dailyDTO.getPrice(), dailyDTO.getQuantity());
+                dailyDTO.getName(),dailyDTO.getWeight(),dailyDTO.getPrice(), dailyDTO.getQuantity(),dailyDTO.getMemo());
     }
 
     void save(DailyCost dailyCost);
@@ -41,7 +41,7 @@ public interface DailyService {
 
     List<DailyCost> filterByDaily(LocalDate purchaseDate, YearMonth yearMonth, String supermarket, String type, String name);
 
-    Page<DailyCost> getPaginatedDailyList(Pageable pageable);
+    Page<DailyCost> getPaginatedDailyList(List<DailyCost> dailyCostList, Pageable pageable);
 
     Page<DailyCost> filterByDaily(String purchaseDate, String month, String supermarket, String type, String name, Pageable pageable);
 }

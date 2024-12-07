@@ -70,72 +70,6 @@
         </form>
 
 
-        <!--<div class="content p-2">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">No</th>
-                    <th scope="col">Ngày Mua</th>
-                    <th scope="col">Siêu Thị</th>
-                    <th scope="col">Loại Đồ</th>
-                    <th scope="col">Tên Đồ</th>
-                    <th scope="col">Khối Lượng(gam)</th>
-                    <th scope="col">Giá</th>
-                    <th scope="col">Số Lượng</th>
-                    <th scope="col">Thành Tiền</th>
-                    <th scope="col">Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each=" daily : ${dailyList}">
-                    <td th:text="${daily.id}"></td>
-                    <td th:text="${daily.purchaseDate}"></td>
-                    <td th:text="${daily.supermarket}"></td>
-                    <td th:text="${daily.type}"></td>
-                    <td th:text="${daily.name}"></td>
-                    <td th:text="${daily.weight}"></td>
-                    <td th:text="${daily.price}"></td>
-                    <td th:text="${daily.quantity}"></td>
-                    <td th:text="${daily.price != null && daily.quantity != null ? daily.price * daily.quantity : 0}"></td>
-                    <td>
-                        <a href="#" th:href="@{/daily/edit/{id}(id=${daily.id})}">
-                            Edit</a>
-                        <a href="#"
-                           th:href="@{/total/delete/{id}(id=${daily.id})}"
-                           onclick="return confirmDelete();">Delete</a>
-                    </td>
-                </tr>
-                <tr th:object="${total1}">
-                    <th colspan="8" style="text-align:center">Tổng Tiền</th>
-                    <th th:text="${total1}"></th>
-                    <th></th>
-                </tr>
-                <tr th:object="${totalFood}">
-                    <td colspan="8" style="text-align:center">Thực Phẩm</td>
-                    <td th:text="${totalFood}"></td>
-                    <td th:text="${foodPercentage+ ' %'}"></td>
-                </tr>
-                <tr th:object="${totalItem}">
-                    <td colspan="8" style="text-align:center">Đồ Dùng</td>
-                    <td th:text="${totalItem}"></td>
-                    <td th:text="${itemPercentage  + ' %'}"></td>
-                </tr>
-                <tr th:object="${totalMedical}">
-                    <td colspan="8" style="text-align:center">Thuốc</td>
-                    <td th:text="${totalMedical}"></td>
-                    <td th:text="${medicalPercentage+ ' %'}"></td>
-                </tr>
-                <tr th:object="${totalClothing}">
-                    <td colspan="8" style="text-align:center">Quần Áo</td>
-                    <td th:text="${totalClothing}"></td>
-                    <td th:text="${clothingPercentage+ ' %'}"></td>
-                </tr>
-                </tbody>
-            </table>
-
-
-        </div>
--->
         <div class="content p-2">
             <table class="table">
                 <tr th:object="${total1}">
@@ -171,14 +105,15 @@
                 <thead>
                 <tr>
                     <th scope="col">No</th>
-                    <th scope="col">Ngày Mua</th>
+                    <th scope="col">Ngày</th>
                     <th scope="col">Siêu Thị</th>
                     <th scope="col">Loại Đồ</th>
                     <th scope="col">Tên Đồ</th>
-                    <th scope="col">Khối Lượng(gam)</th>
+                    <th scope="col">KL(gam)</th>
                     <th scope="col">Giá</th>
-                    <th scope="col">Số Lượng</th>
-                    <th scope="col">Thành Tiền</th>
+                    <th scope="col">SL</th>
+                    <th scope="col">Tiền</th>
+                    <th scope="col">Ghi Chú</th>
                     <th scope="col">Action</th>
                 </tr>
                 </thead>
@@ -193,6 +128,7 @@
                     <td th:text="${daily.price}"></td>
                     <td th:text="${daily.quantity}"></td>
                     <td th:text="${daily.price != null && daily.quantity != null ? daily.price * daily.quantity : 0}"></td>
+                    <td th:text="${daily.memo}"></td>
                     <td>
                         <a href="#" th:href="@{/daily/edit/{id}(id=${daily.id})}">Edit</a>
                         <a href="#" th:href="@{/total/delete/{id}(id=${daily.id})}" onclick="return confirmDelete();">Delete</a>
@@ -207,8 +143,8 @@
                     <!-- Previous Button -->
                     <li class="page-item" th:classappend="${currentPage != null and currentPage == 0} ? 'disabled' : ''">
                         <a class="page-link"
-                           th:href="@{/total?page={page}(page=${currentPage != null ? currentPage - 1 : 0})}">
-                            Previous
+                        <th:href="@{${searching != true ? '/total?page=' + (currentPage != null ? currentPage - 1 : 0) : '/total/search?page=' + (currentPage != null ? currentPage - 1 : 0)}}">
+                        Previous
                         </a>
                     </li>
 
@@ -217,15 +153,15 @@
                         th:each="i : ${#numbers.sequence(0, totalPages != null ? totalPages - 1 : 0)}"
                         th:classappend="${currentPage != null and i == currentPage} ? 'active' : ''">
                         <a class="page-link"
-                           th:href="@{/total?page={page}(page=${i})}"
+                           th:href="@{${searching != true ? '/total?page=' + i : '/total/search?page=' + i}}"
                            th:text="${i + 1}"></a>
                     </li>
 
                     <!-- Next Button -->
                     <li class="page-item" th:classappend="${currentPage != null and currentPage == (totalPages != null ? totalPages - 1 : 0)} ? 'disabled' : ''">
                         <a class="page-link"
-                           th:href="@{/total?page={page}(page=${currentPage != null ? currentPage + 1 : 1})}">
-                            Next
+                        <th:href="@{${searching != true ? '/total?page=' + (currentPage != null ? currentPage + 1 : 1) : '/total/search?page=' + (currentPage != null ? currentPage + 1 : 1)}}">
+                        Next
                         </a>
                     </li>
                 </ul>

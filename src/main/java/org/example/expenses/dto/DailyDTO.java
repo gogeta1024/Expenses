@@ -37,4 +37,6 @@ public class DailyDTO
     @Min(value = 1, message = "{MS2_REQUIRED}")
     private Integer quantity=1;
 
+    private String memo;
+
 }

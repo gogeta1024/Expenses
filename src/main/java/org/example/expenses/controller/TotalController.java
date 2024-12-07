@@ -1,5 +1,7 @@
 package org.example.expenses.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.expenses.entity.DailyCost;
 import org.example.expenses.entity.MonthlyCost;
@@ -8,6 +10,7 @@ import org.example.expenses.service.MonthlyService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("total")
@@ -53,14 +57,16 @@ public class TotalController {
     }
 
     @GetMapping
-    public String total(@RequestParam(defaultValue = "0") int page, Model model) {
-
+    public String total( @RequestParam(value = "page", defaultValue = "0") int page,
+                         @RequestParam(value = "size", defaultValue = "10") int size,
+                         Model model) {
         List<DailyCost> dailyCostList = dailyService.getAll();
         //model.addAttribute("dailyList", dailyCostList);
-        Page<DailyCost> dailyPage = dailyService.getPaginatedDailyList(PageRequest.of(page, 10)); // 10 items per page
+        Pageable pageable = PageRequest.of(page,size, Sort.by("purchaseDate").descending());
+        Page<DailyCost> dailyPage = dailyService.getPaginatedDailyList(dailyCostList, pageable); // 10 items per page
         model.addAttribute("dailyList", dailyPage.getContent());
         model.addAttribute("totalPages", dailyPage.getTotalPages());
-        model.addAttribute("currentPage", page);
+        model.addAttribute("currentPage", dailyPage.getNumber());
 
         List<MonthlyCost> monthlyCostList = monthlyService.getAll();
         model.addAttribute("monthlyList", monthlyCostList);
@@ -80,14 +86,17 @@ public class TotalController {
         return "redirect:/total";
     }
 
-/*    @PostMapping("/search")
+    @RequestMapping(value = "/search", method = {RequestMethod.GET, RequestMethod.POST})
     public String search(
             @RequestParam(value = "purchaseDate", required = false) LocalDate purchaseDate,
             @RequestParam(value = "month", required = false) YearMonth yearMonth,
             @RequestParam(value = "supermarket", required = false) String supermarket,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "name", required = false) String name,
-            Model model) {
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model,
+            HttpServletRequest request) {
 
         if (purchaseDate != null && yearMonth != null) {
             // Trả về một danh sách dailyCostList rỗng
@@ -109,8 +118,23 @@ public class TotalController {
         model.addAttribute("supermarket", supermarket);
         model.addAttribute("type", type);
         model.addAttribute("name", name);
+        model.addAttribute("searching", true);  // Đánh dấu tìm kiếm đang diễn ra
 
-        List<DailyCost> dailyCostList = dailyService.filterByDaily(purchaseDate, yearMonth, supermarket, type, name);
+        HttpSession session = request.getSession();
+        List<DailyCost> dailyCostList;
+
+        if (purchaseDate != null || yearMonth != null || supermarket != null || type != null || name != null) {
+            // Nếu có tham số tìm kiếm, thực hiện tìm kiếm
+            dailyCostList = dailyService.filterByDaily(purchaseDate, yearMonth, supermarket, type, name);
+            session.setAttribute("dailyCostList", dailyCostList); // Lưu vào session
+        } else {
+            // Nếu không có tham số tìm kiếm, lấy từ session
+            dailyCostList = (List<DailyCost>) session.getAttribute("dailyCostList");
+            if (dailyCostList == null) {
+                dailyCostList = dailyService.getAll(); // Dữ liệu mặc định
+            }
+        }
+
         List<MonthlyCost> monthlyCostList = monthlyService.findByMonthAndYear(yearMonth != null ? yearMonth.toString() : null);
 
         // Nếu không có kết quả, trả về thông báo lỗi
@@ -118,27 +142,31 @@ public class TotalController {
             model.addAttribute("error1", "Không tìm thấy kết quả phù hợp.");
         }
 
-        model.addAttribute("dailyList", dailyCostList);
+        Pageable pageable = PageRequest.of(page,size, Sort.by("purchaseDate").descending());
+        Page<DailyCost> dailyPage = dailyService.getPaginatedDailyList(dailyCostList, pageable); // 10 items per page
+
+        model.addAttribute("dailyList", dailyPage.getContent());
+        model.addAttribute("totalPages", dailyPage.getTotalPages());
+        model.addAttribute("currentPage", dailyPage.getNumber());
         model.addAttribute("monthlyList", monthlyCostList);
 
         data(dailyCostList,monthlyCostList,model);
 
 
         return "total";
-    }*/
+    }
 
-    @PostMapping("/search")
+    /*@RequestMapping(value = "/search", method = {RequestMethod.GET, RequestMethod.POST})
     public String search(
             @RequestParam(value = "purchaseDate", required = false) LocalDate purchaseDate,
-            @RequestParam(value = "month", required = false) YearMonth yearMonth, // dùng YearMonth
+            @RequestParam(value = "month", required = false) YearMonth yearMonth, // Dùng YearMonth
             @RequestParam(value = "supermarket", required = false) String supermarket,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "page", defaultValue = "0") int page,  // Tham số trang mặc định là 0
             @RequestParam(value = "size", defaultValue = "10") int size, // Tham số kích thước trang mặc định là 10
-            Model model) {
-        // Log giá trị purchaseDate để kiểm tra
-        System.out.println("purchaseDate: " + purchaseDate);
+            Model model,
+            HttpServletRequest request) {
 
         if (purchaseDate != null && yearMonth != null) {
             // Trả về thông báo nếu chọn cả purchaseDate và yearMonth
@@ -146,11 +174,13 @@ public class TotalController {
             return "total";
         }
 
+        // Thêm thông tin vào Model cho việc tìm kiếm
         model.addAttribute("purchaseDate", purchaseDate);
         model.addAttribute("month", yearMonth);
         model.addAttribute("supermarket", supermarket);
         model.addAttribute("type", type);
         model.addAttribute("name", name);
+        model.addAttribute("searching", true);  // Đánh dấu tìm kiếm đang diễn ra
 
         // Chuyển YearMonth thành chuỗi "YYYY-MM"
         String monthStr = (yearMonth != null) ? yearMonth.toString() : null;
@@ -161,8 +191,10 @@ public class TotalController {
         // Tạo Pageable với thông số page và size
         Pageable pageable = PageRequest.of(page, size);
 
-        // Truy vấn cơ sở dữ liệu với paging
+        // Tạo danh sách kết quả từ dịch vụ (filterByDaily)
         Page<DailyCost> dailyCostList = dailyService.filterByDaily(purchaseDateStr, monthStr, supermarket, type, name, pageable);
+
+        // Lấy danh sách MonthlyCost (nếu có)
         List<MonthlyCost> monthlyCostList = monthlyService.findByMonthAndYear(monthStr);
 
         // Nếu không có kết quả, trả về thông báo lỗi
@@ -170,15 +202,17 @@ public class TotalController {
             model.addAttribute("error1", "Không tìm thấy kết quả phù hợp.");
         }
 
+        // Thêm thông tin kết quả vào Model
         model.addAttribute("dailyList", dailyCostList.getContent());
         model.addAttribute("monthlyList", monthlyCostList);
         model.addAttribute("currentPage", dailyCostList.getNumber());
         model.addAttribute("totalPages", dailyCostList.getTotalPages());
 
+        // Chạy một hàm để xử lý dữ liệu (nếu có)
         data(dailyCostList.getContent(), monthlyCostList, model);
 
         return "total";
-    }
+    }*/
 
 
 

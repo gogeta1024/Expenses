@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.expenses.entity.DailyCost;
 import org.example.expenses.repository.DailyRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,7 +29,7 @@ public class DailyServiceImpl implements DailyService {
 
     @Override
     public List<DailyCost> getAll() {
-        dailyCostList = dailyRepository.findAll();
+        dailyCostList = dailyRepository.findAll(Sort.by(Sort.Direction.DESC, "purchaseDate"));
         return dailyCostList;
     }
 
@@ -127,9 +129,23 @@ public class DailyServiceImpl implements DailyService {
 
     }
 
-    @Override
-    public Page<DailyCost> getPaginatedDailyList(Pageable pageable) {
-        return dailyRepository.findAll(pageable);
+    public Page<DailyCost> getPaginatedDailyList(List<DailyCost> dailyCostList, Pageable pageable) {
+        // Xác định vị trí bắt đầu và kết thúc của trang
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        int endItem = Math.min(startItem + pageSize, dailyCostList.size());
+
+        // Trích xuất dữ liệu trang từ danh sách
+        List<DailyCost> paginatedList;
+        if (startItem > dailyCostList.size()) {
+            paginatedList = List.of(); // Trang rỗng nếu không có dữ liệu
+        } else {
+            paginatedList = dailyCostList.subList(startItem, endItem);
+        }
+
+        // Tạo đối tượng Page với dữ liệu đã phân trang
+        return new PageImpl<>(paginatedList, pageable, dailyCostList.size());
     }
 
     @Override

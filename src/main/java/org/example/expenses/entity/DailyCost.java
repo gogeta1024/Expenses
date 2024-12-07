@@ -42,4 +42,6 @@ import java.time.LocalDate;
         @Column(name="quantity")
         private Integer quantity=1;
 
+        @Column(name = "memo")
+        private String memo;
 }

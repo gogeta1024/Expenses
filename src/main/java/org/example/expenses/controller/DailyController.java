@@ -6,6 +6,10 @@ import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.entity.DailyCost;
 import org.example.expenses.service.DailyService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +32,13 @@ public class DailyController {
     }
 
     public void data(Model model) {
+
+    }
+
+    @GetMapping
+    public String daily( @RequestParam(value = "page", defaultValue = "0") int page,
+                         @RequestParam(value = "size", defaultValue = "10") int size,
+                         Model model) {
         // Lấy giá trị ngày hôm nay gán cho purchaseDate
         LocalDate purchaseDate = LocalDate.now();
 
@@ -36,15 +47,15 @@ public class DailyController {
         int year = purchaseDate.getYear();
 
         List<DailyCost> dailyCostList = dailyService.findByMonthAndYear(month, year);
-        model.addAttribute("dailyList", dailyCostList);
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("purchaseDate").descending());
+        Page<DailyCost> dailyPage = dailyService.getPaginatedDailyList(dailyCostList, pageable); // 10 items per page
+        model.addAttribute("dailyList", dailyPage.getContent());
+        model.addAttribute("totalPages", dailyPage.getTotalPages());
+        model.addAttribute("currentPage", dailyPage.getNumber());
 
         Integer totalAmount = dailyService.totalAmount(dailyCostList);
         model.addAttribute("total", totalAmount);
-    }
-
-    @GetMapping
-    public String daily(Model model) {
-        data(model);
         return "daily";
     }
 
