@@ -1,6 +1,18 @@
+/* Reset CSS cơ bản */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
 .container {
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1fr 2fr;
     grid-template-rows: auto 1fr auto;
     grid-template-areas:
         'header header'
@@ -16,18 +28,27 @@ header {
 }
 
 .sidebar {
+    font-size: 1.6rem;
     border: 1px solid black;
     grid-area: sidebar;
+    word-wrap: break-word; /* Bẻ dòng nếu nội dung quá dài */
 }
 
 .sidebar > ul {
     list-style-type: none;
+    padding-left: 15px; /* Thêm khoảng cách nội dung */
+}
+
+.sidebar a {
+    color: #7ed519;
+    text-decoration: none;
 }
 
 .content {
     border: 1px solid black;
     padding: 15px;
     grid-area: content;
+    max-width: 100%; /* Giới hạn chiều rộng nội dung */
 }
 
 footer {
@@ -35,6 +56,7 @@ footer {
     grid-area: footer;
     text-align: center;
     height: 80px; /* Chiều cao cố định */
+    max-width: 100%; /* Đảm bảo không vượt quá chiều rộng màn hình */
 }
 
 /* Căn chỉnh các button */
@@ -43,6 +65,22 @@ footer {
     justify-content: left;
     gap: 15px;
     margin: 20px;
+    flex-wrap: wrap; /* Tự động xuống dòng nếu không đủ chỗ */
+}
+
+
+table {
+    width: 100%; /* Bảng chiếm đầy chiều rộng wrapper */
+    border-collapse: collapse; /* Gộp viền ô */
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    white-space: normal;
+    a{
+    font-size: 1.1rem;
+    }
 }
 
 /* Media Query cho điện thoại */
@@ -56,19 +94,36 @@ footer {
             'footer';
     }
 
+    header, footer {
+        height: auto; /* Điều chỉnh chiều cao linh hoạt */
+    }
+
     .sidebar {
-        order: 1; /* Đảm bảo sidebar hiển thị dưới content */
+        order: 2; /* Đưa sidebar xuống sau content */
+        padding: 10px; /* Thêm khoảng cách */
     }
 
     .content {
-        order: 2; /* Đảm bảo content hiển thị trước sidebar */
-    }
-
-    header, footer {
-        height: auto; /* Điều chỉnh chiều cao cho header và footer khi ở trên màn hình nhỏ */
+        order: 1; /* Đảm bảo content hiển thị trước */
     }
 
     .button {
-        justify-content: center; /* Đặt các button ở giữa trên màn hình nhỏ */
+        justify-content: center; /* Đặt các button ở giữa */
+    }
+    td:nth-child(1), th:nth-child(1)
+        {
+             display: none;
+        }
+
+    .container, .content, .sidebar, header, footer {
+        max-width: 100%; /* Không vượt quá chiều rộng màn hình */
+        overflow-x: hidden; /* Ngăn cuộn ngang */
+        word-wrap: break-word; /* Bẻ dòng cho nội dung dài */
+    }
+
+    .table-wrapper {
+        overflow-x: auto; /* Cuộn ngang chỉ phần bảng */
+        -webkit-overflow-scrolling: touch; /* Cuộn mượt trên di động */
+        max-width: 100%; /* Đảm bảo không tràn màn hình */
     }
 }

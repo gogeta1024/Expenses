@@ -1,9 +1,7 @@
 package org.example.expenses.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.expenses.dto.DailyDTO;
-import org.example.expenses.entity.DailyCost;
 import org.example.expenses.service.DailyService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("daily")
@@ -27,8 +24,8 @@ public class DailyController {
     private final DailyService dailyService;
 
     @ModelAttribute("daily")
-    public DailyDTO setupDailyDTO() {
-        return new DailyDTO(); // Tạo đối tượng mặc định nếu chưa có trong session
+    public org.example.expenses.dto.DailyDTO setupDailyDTO() {
+        return new org.example.expenses.dto.DailyDTO(); // Tạo đối tượng mặc định nếu chưa có trong session
     }
 
     public void data(Model model) {
@@ -46,16 +43,18 @@ public class DailyController {
         int month = purchaseDate.getMonthValue();
         int year = purchaseDate.getYear();
 
-        List<DailyCost> dailyCostList = dailyService.findByMonthAndYear(month, year);
+        List<DailyDTO> dailyDTOList = dailyService.findByMonthAndYear(month, year);
 
         Pageable pageable = PageRequest.of(page,size, Sort.by("purchaseDate").descending());
-        Page<DailyCost> dailyPage = dailyService.getPaginatedDailyList(dailyCostList, pageable); // 10 items per page
+        Page<DailyDTO> dailyPage = dailyService.getPaginatedDailyList(dailyDTOList, pageable); // 10 items per page
         model.addAttribute("dailyList", dailyPage.getContent());
         model.addAttribute("totalPages", dailyPage.getTotalPages());
         model.addAttribute("currentPage", dailyPage.getNumber());
 
-        Integer totalAmount = dailyService.totalAmount(dailyCostList);
+        Integer totalAmount = dailyService.totalAmount(dailyDTOList);
         model.addAttribute("total", totalAmount);
+
+
         return "daily";
     }
 
@@ -68,8 +67,8 @@ public class DailyController {
             return "daily";
         }
 
-        DailyCost dailyCost = DailyService.convertToEntity(dailyDTO);
-        dailyService.save(dailyCost);
+        //DailyDTO dailyDTO = DailyService.convertToEntity(dailyDTO);
+        dailyService.save(dailyDTO);
 
         return "redirect:/daily";
     }
@@ -83,7 +82,7 @@ public class DailyController {
 
     @GetMapping(value = "edit/{id}")
     public String dailyEdit(@PathVariable Long id, Model model) {
-        DailyCost dailyEdit = dailyService.findByID(id);
+        DailyDTO dailyEdit = dailyService.findByID(id);
         System.out.println("purchaseDate: " + dailyEdit.getPurchaseDate());
         model.addAttribute("dailyEdit",dailyEdit);
         return "daily-edit";
@@ -91,7 +90,7 @@ public class DailyController {
 
     @PostMapping("/edit")
     public String dailyUpdate(
-            @Validated @ModelAttribute("dailyEdit") DailyDTO dailyDTO,
+            @Validated @ModelAttribute("dailyEdit") org.example.expenses.dto.DailyDTO dailyDTO,
             BindingResult bindingResult, Model model) {
 
 
@@ -101,7 +100,7 @@ public class DailyController {
             return "daily-edit";
         }
 
-        DailyCost dailyEdit = dailyDTO.getId()!=null ? dailyService.findByID(dailyDTO.getId()) : new DailyCost();
+        DailyDTO dailyEdit = dailyDTO.getId()!=null ? dailyService.findByID(dailyDTO.getId()) : new DailyDTO();
 
         BeanUtils.copyProperties(dailyDTO, dailyEdit,"id");
         dailyService.save(dailyEdit);

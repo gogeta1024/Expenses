@@ -1,6 +1,7 @@
 package org.example.expenses.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.entity.DailyCost;
 import org.example.expenses.repository.DailyRepository;
 import org.springframework.data.domain.Page;
@@ -21,46 +22,100 @@ public class DailyServiceImpl implements DailyService {
 
     private final DailyRepository dailyRepository;
     List<DailyCost> dailyCostList;
+    List<DailyDTO> dailyDTOList;
+
+    private DailyCost convertToEntity(DailyDTO dailyDTO)
+    {
+        return new DailyCost( dailyDTO.getId(),dailyDTO.getPurchaseDate(),dailyDTO.getSupermarket(),dailyDTO.getType(),
+                dailyDTO.getName(),dailyDTO.getWeight(),dailyDTO.getPrice(), dailyDTO.getQuantity(),dailyDTO.getMemo());
+    }
+
+    private DailyDTO convertToDTO(DailyCost dailyCost) {
+        DailyDTO dailyDTO = new DailyDTO();
+        dailyDTO.setId(dailyCost.getId());
+        dailyDTO.setPurchaseDate(dailyCost.getPurchaseDate());
+        dailyDTO.setSupermarket(dailyCost.getSupermarket());
+        dailyDTO.setType(dailyCost.getType());
+        dailyDTO.setName(dailyCost.getName());
+        dailyDTO.setWeight(dailyCost.getWeight());
+        dailyDTO.setPrice(dailyCost.getPrice());
+        dailyDTO.setQuantity(dailyCost.getQuantity());
+        dailyDTO.setMemo(dailyCost.getMemo());
+
+        // Tính toán formattedPrice (ví dụ định dạng giá trị)
+        if (dailyCost.getPrice() != null && dailyCost.getQuantity() != null && dailyCost.getQuantity() != 0) {
+            double unitPrice = (double) dailyCost.getPrice() / dailyCost.getQuantity();
+
+            // Kiểm tra phần thập phân, nếu không có phần thập phân thì chỉ hiển thị số nguyên
+            if (unitPrice == Math.floor(unitPrice)) {
+                // Nếu chia hết (phần thập phân = 0), hiển thị số nguyên
+                dailyDTO.setFormattedPrice(String.format("%d", (int) unitPrice));
+            } else {
+                // Nếu có phần thập phân, hiển thị với 2 chữ số thập phân
+                dailyDTO.setFormattedPrice(String.format("%.2f", unitPrice));
+            }
+        } else {
+            dailyDTO.setFormattedPrice("0"); // Giá trị mặc định nếu không đủ thông tin
+        }
+
+        return dailyDTO;
+    }
+
+
+
 
     @Override
-    public void save(DailyCost dailyCost) {
-        dailyRepository.save(dailyCost);
+    public void save(DailyDTO dailyDTO) {
+        dailyRepository.save(convertToEntity(dailyDTO));
     }
 
     @Override
-    public List<DailyCost> getAll() {
+    public List<DailyDTO> getAll() {
         dailyCostList = dailyRepository.findAll(Sort.by(Sort.Direction.DESC, "purchaseDate"));
-        return dailyCostList;
+
+        return dailyCostList.stream()
+                .map(this::convertToDTO) // Sử dụng mapper method
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<DailyCost> findByDate(LocalDate purchaseDate) {
+    public List<DailyDTO> findByDate(LocalDate purchaseDate) {
         dailyCostList = dailyRepository.findByPurchaseDate(purchaseDate);
-        return dailyCostList;
+        return dailyCostList.stream()
+                .map(this::convertToDTO) // Sử dụng mapper method
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<DailyCost> findBySupermarket(String supermarket) {
+    public List<DailyDTO> findBySupermarket(String supermarket) {
         dailyCostList = dailyRepository.findBySupermarket(supermarket);
-        return dailyCostList;
+        return dailyCostList.stream()
+                .map(this::convertToDTO) // Sử dụng mapper method
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<DailyCost> findByType(String type) {
+    public List<DailyDTO> findByType(String type) {
         dailyCostList = dailyRepository.findByType(type);
-        return dailyCostList;
+        return dailyCostList.stream()
+                .map(this::convertToDTO) // Sử dụng mapper method
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<DailyCost> findByName(String name) {
+    public List<DailyDTO> findByName(String name) {
         dailyCostList = dailyRepository.findByName(name);
-        return dailyCostList;
+        return dailyCostList.stream()
+                .map(this::convertToDTO) // Sử dụng mapper method
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<DailyCost> findByMonthAndYear(int month, int year) {
+    public List<DailyDTO> findByMonthAndYear(int month, int year) {
         dailyCostList = dailyRepository.findByMonthAndYear(month, year);
-        return dailyCostList;
+        return dailyCostList.stream()
+                .map(this::convertToDTO) // Sử dụng mapper method
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -70,25 +125,24 @@ public class DailyServiceImpl implements DailyService {
 
 
     @Override
-    public Integer totalAmount(List<DailyCost> dailyCostList) {
+    public Integer totalAmount(List<DailyDTO> dailyDTOList) {
         Integer totalAmount = 0;
 
-        for (DailyCost daily : dailyCostList) {
-            // Kiểm tra null cho price và quantity
+        for (DailyDTO daily : dailyDTOList) {
+            // Kiểm tra null cho price
             Integer price = daily.getPrice() != null ? daily.getPrice() : 0;
-            Integer quantity = daily.getQuantity() != null ? daily.getQuantity() : 0;
-
-            totalAmount += price * quantity;
+            totalAmount += price;
         }
         return totalAmount;
     }
 
+
     @Override
-    public Integer totalType(List<DailyCost> dailyCostList, String type) {
+    public Integer totalType(List<DailyDTO> dailyDTOList, String type) {
         Integer totalType = 0;
-        for (DailyCost daily : dailyCostList) {
+        for (DailyDTO daily : dailyDTOList) {
             if (type.equals(daily.getType())) {
-                totalType += daily.getPrice() * daily.getQuantity();
+                totalType += daily.getPrice() ;
             }
         }
         return totalType;
@@ -105,9 +159,9 @@ public class DailyServiceImpl implements DailyService {
     }*/
 
     @Override
-    public List<DailyCost> filterByDaily(LocalDate purchaseDate, YearMonth yearMonth, String supermarket, String type, String name) {
+    public List<DailyDTO> filterByDaily(LocalDate purchaseDate, YearMonth yearMonth, String supermarket, String type, String name) {
         // Lấy dữ liệu từ danh sách hiện tại hoặc repository
-        List<DailyCost> sourceList = dailyCostList.isEmpty() ? dailyRepository.findAll() : dailyCostList;
+        List<DailyDTO> sourceList = dailyDTOList==null || dailyDTOList.isEmpty() ? getAll() : dailyDTOList;
 
         // Áp dụng bộ lọc
         return sourceList.stream()
@@ -122,35 +176,36 @@ public class DailyServiceImpl implements DailyService {
     }
 
     @Override
-    public DailyCost findByID(Long id)
+    public DailyDTO findByID(Long id)
     {
         Optional<DailyCost> dailyCostOptional =  dailyRepository.findById(id);
-        return dailyCostOptional.orElse(null);
-
+        return dailyCostOptional.map(this::convertToDTO).orElse(null);
     }
 
-    public Page<DailyCost> getPaginatedDailyList(List<DailyCost> dailyCostList, Pageable pageable) {
+    public Page<DailyDTO> getPaginatedDailyList(List<DailyDTO> dailyDTOList, Pageable pageable) {
         // Xác định vị trí bắt đầu và kết thúc của trang
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
-        int endItem = Math.min(startItem + pageSize, dailyCostList.size());
+        int endItem = Math.min(startItem + pageSize, dailyDTOList.size());
 
         // Trích xuất dữ liệu trang từ danh sách
-        List<DailyCost> paginatedList;
-        if (startItem > dailyCostList.size()) {
+        List<DailyDTO> paginatedList;
+        if (startItem > dailyDTOList.size()) {
             paginatedList = List.of(); // Trang rỗng nếu không có dữ liệu
         } else {
-            paginatedList = dailyCostList.subList(startItem, endItem);
+            paginatedList = dailyDTOList.subList(startItem, endItem);
         }
 
         // Tạo đối tượng Page với dữ liệu đã phân trang
-        return new PageImpl<>(paginatedList, pageable, dailyCostList.size());
+        return new PageImpl<>(paginatedList, pageable, dailyDTOList.size());
     }
 
     @Override
-    public Page<DailyCost> filterByDaily(String purchaseDate, String month, String supermarket, String type, String name, Pageable pageable) {
-        return dailyRepository.findByCriteria(purchaseDate, month, supermarket, type, name, pageable);
+    public Page<DailyDTO> filterByDaily(String purchaseDate, String month, String supermarket, String type, String name, Pageable pageable) {
+        Page<DailyCost> dailyCosts = dailyRepository.findByCriteria(purchaseDate, month, supermarket, type, name, pageable);
+        // Sử dụng map để chuyển đổi từ DailyCost sang DailyDTO
+        return dailyCosts.map(this::convertToDTO);
     }
 
 

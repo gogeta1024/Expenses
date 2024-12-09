@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -44,4 +43,6 @@ import java.time.LocalDate;
 
         @Column(name = "memo")
         private String memo;
+
+
 }

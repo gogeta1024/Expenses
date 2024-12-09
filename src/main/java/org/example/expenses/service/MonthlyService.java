@@ -1,9 +1,7 @@
 package org.example.expenses.service;
 
-import org.example.expenses.entity.DailyCost;
 import org.example.expenses.entity.MonthlyCost;
 
-import java.time.YearMonth;
 import java.util.List;
 
 public interface MonthlyService {

@@ -39,4 +39,6 @@ public class DailyDTO
 
     private String memo;
 
+    private String formattedPrice;
+
 }

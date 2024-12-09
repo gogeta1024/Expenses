@@ -90,20 +90,20 @@
 
         </form>
 
-        <div class="content p-2">
+        <div class="table-wrapper p-2">
             <table class="table">
                 <thead>
                 <tr>
                     <th scope="col">No</th>
                     <th scope="col">Ngày</th>
                     <th scope="col">Siêu Thị</th>
-                    <th scope="col">Loại Đồ</th>
-                    <th scope="col">Tên Đồ</th>
+                    <th scope="col">Loại</th>
+                    <th scope="col">Tên</th>
                     <th scope="col">KL(gam)</th>
                     <th scope="col">Giá</th>
                     <th scope="col">SL</th>
-                    <th scope="col">Tiền</th>
-                    <th scope="col">Ghi Chú</th>
+                    <th scope="col">Giá/SL</th>
+                    <th scope="col">Memo</th>
                     <th scope="col">Action</th>
                 </tr>
                 </thead>
@@ -128,7 +128,8 @@
                     </td>
                 </tr>
                 <tr th:object="${total}">
-                    <th colspan="8" style="text-align:center">Tổng Tiền</th>
+                    <th></th>
+                    <th colspan="5" style="text-align:center">Tổng Tiền</th>
                     <th th:text="${total}"></th>
                     <th></th>
                 </tr>

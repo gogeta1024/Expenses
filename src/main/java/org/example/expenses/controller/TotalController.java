@@ -3,7 +3,7 @@ package org.example.expenses.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.example.expenses.entity.DailyCost;
+import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.entity.MonthlyCost;
 import org.example.expenses.service.DailyService;
 import org.example.expenses.service.MonthlyService;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("total")
@@ -27,18 +26,18 @@ public class TotalController {
     private final DailyService dailyService;
     private final MonthlyService monthlyService;
 
-    public void data(List<DailyCost> dailyCostList, List<MonthlyCost> monthlyCostList, Model model)
+    public void data(List<DailyDTO> dailyDTOList, List<MonthlyCost> monthlyCostList, Model model)
     {
-        Integer total1 = dailyService.totalAmount(dailyCostList);
+        Integer total1 = dailyService.totalAmount(dailyDTOList);
         model.addAttribute("total1", total1);
 
         Integer total2 = monthlyService.totalAmount(monthlyCostList);
         model.addAttribute("total2", total2);
 
-        Integer totalFood = dailyService.totalType(dailyCostList,"Thực Phẩm");
-        Integer totalItem = dailyService.totalType(dailyCostList,"Đồ Dùng");
-        Integer totalMedical = dailyService.totalType(dailyCostList,"Thuốc");
-        Integer totalClothing = dailyService.totalType(dailyCostList,"Quần Áo");
+        Integer totalFood = dailyService.totalType(dailyDTOList,"Thực Phẩm");
+        Integer totalItem = dailyService.totalType(dailyDTOList,"Đồ Dùng");
+        Integer totalMedical = dailyService.totalType(dailyDTOList,"Thuốc");
+        Integer totalClothing = dailyService.totalType(dailyDTOList,"Quần Áo");
         model.addAttribute("totalFood", totalFood);
         model.addAttribute("totalItem", totalItem);
         model.addAttribute("totalMedical", totalMedical);
@@ -60,10 +59,10 @@ public class TotalController {
     public String total( @RequestParam(value = "page", defaultValue = "0") int page,
                          @RequestParam(value = "size", defaultValue = "10") int size,
                          Model model) {
-        List<DailyCost> dailyCostList = dailyService.getAll();
-        //model.addAttribute("dailyList", dailyCostList);
+        List<DailyDTO> dailyDTOList = dailyService.getAll();
+        //model.addAttribute("dailyList", dailyDTOList);
         Pageable pageable = PageRequest.of(page,size, Sort.by("purchaseDate").descending());
-        Page<DailyCost> dailyPage = dailyService.getPaginatedDailyList(dailyCostList, pageable); // 10 items per page
+        Page<DailyDTO> dailyPage = dailyService.getPaginatedDailyList(dailyDTOList, pageable); // 10 items per page
         model.addAttribute("dailyList", dailyPage.getContent());
         model.addAttribute("totalPages", dailyPage.getTotalPages());
         model.addAttribute("currentPage", dailyPage.getNumber());
@@ -71,7 +70,7 @@ public class TotalController {
         List<MonthlyCost> monthlyCostList = monthlyService.getAll();
         model.addAttribute("monthlyList", monthlyCostList);
 
-        data(dailyCostList,monthlyCostList,model);
+        data(dailyDTOList,monthlyCostList,model);
 
         return "total";
     }
@@ -99,7 +98,7 @@ public class TotalController {
             HttpServletRequest request) {
 
         if (purchaseDate != null && yearMonth != null) {
-            // Trả về một danh sách dailyCostList rỗng
+            // Trả về một danh sách dailyDTOList rỗng
             model.addAttribute("dailyList", null);
             // Trả về danh sách monthlyCostList (hoặc có thể để rỗng nếu cần)
             model.addAttribute("monthlyList", null);
@@ -121,36 +120,36 @@ public class TotalController {
         model.addAttribute("searching", true);  // Đánh dấu tìm kiếm đang diễn ra
 
         HttpSession session = request.getSession();
-        List<DailyCost> dailyCostList;
+        List<DailyDTO> dailyDTOList;
 
         if (purchaseDate != null || yearMonth != null || supermarket != null || type != null || name != null) {
             // Nếu có tham số tìm kiếm, thực hiện tìm kiếm
-            dailyCostList = dailyService.filterByDaily(purchaseDate, yearMonth, supermarket, type, name);
-            session.setAttribute("dailyCostList", dailyCostList); // Lưu vào session
+            dailyDTOList = dailyService.filterByDaily(purchaseDate, yearMonth, supermarket, type, name);
+            session.setAttribute("dailyDTOList", dailyDTOList); // Lưu vào session
         } else {
             // Nếu không có tham số tìm kiếm, lấy từ session
-            dailyCostList = (List<DailyCost>) session.getAttribute("dailyCostList");
-            if (dailyCostList == null) {
-                dailyCostList = dailyService.getAll(); // Dữ liệu mặc định
+            dailyDTOList = (List<DailyDTO>) session.getAttribute("dailyDTOList");
+            if (dailyDTOList == null) {
+                dailyDTOList = dailyService.getAll(); // Dữ liệu mặc định
             }
         }
 
         List<MonthlyCost> monthlyCostList = monthlyService.findByMonthAndYear(yearMonth != null ? yearMonth.toString() : null);
 
         // Nếu không có kết quả, trả về thông báo lỗi
-        if (dailyCostList.isEmpty()){
+        if (dailyDTOList.isEmpty()){
             model.addAttribute("error1", "Không tìm thấy kết quả phù hợp.");
         }
 
         Pageable pageable = PageRequest.of(page,size, Sort.by("purchaseDate").descending());
-        Page<DailyCost> dailyPage = dailyService.getPaginatedDailyList(dailyCostList, pageable); // 10 items per page
+        Page<DailyDTO> dailyPage = dailyService.getPaginatedDailyList(dailyDTOList, pageable); // 10 items per page
 
         model.addAttribute("dailyList", dailyPage.getContent());
         model.addAttribute("totalPages", dailyPage.getTotalPages());
         model.addAttribute("currentPage", dailyPage.getNumber());
         model.addAttribute("monthlyList", monthlyCostList);
 
-        data(dailyCostList,monthlyCostList,model);
+        data(dailyDTOList,monthlyCostList,model);
 
 
         return "total";
@@ -192,24 +191,24 @@ public class TotalController {
         Pageable pageable = PageRequest.of(page, size);
 
         // Tạo danh sách kết quả từ dịch vụ (filterByDaily)
-        Page<DailyCost> dailyCostList = dailyService.filterByDaily(purchaseDateStr, monthStr, supermarket, type, name, pageable);
+        Page<DailyDTO> dailyDTOList = dailyService.filterByDaily(purchaseDateStr, monthStr, supermarket, type, name, pageable);
 
         // Lấy danh sách MonthlyCost (nếu có)
         List<MonthlyCost> monthlyCostList = monthlyService.findByMonthAndYear(monthStr);
 
         // Nếu không có kết quả, trả về thông báo lỗi
-        if (dailyCostList.isEmpty()){
+        if (dailyDTOList.isEmpty()){
             model.addAttribute("error1", "Không tìm thấy kết quả phù hợp.");
         }
 
         // Thêm thông tin kết quả vào Model
-        model.addAttribute("dailyList", dailyCostList.getContent());
+        model.addAttribute("dailyList", dailyDTOList.getContent());
         model.addAttribute("monthlyList", monthlyCostList);
-        model.addAttribute("currentPage", dailyCostList.getNumber());
-        model.addAttribute("totalPages", dailyCostList.getTotalPages());
+        model.addAttribute("currentPage", dailyDTOList.getNumber());
+        model.addAttribute("totalPages", dailyDTOList.getTotalPages());
 
         // Chạy một hàm để xử lý dữ liệu (nếu có)
-        data(dailyCostList.getContent(), monthlyCostList, model);
+        data(dailyDTOList.getContent(), monthlyCostList, model);
 
         return "total";
     }*/

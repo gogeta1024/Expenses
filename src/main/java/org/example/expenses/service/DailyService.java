@@ -10,38 +10,27 @@ import java.time.YearMonth;
 import java.util.List;
 
 public interface DailyService {
-    static DailyDTO convertToDTO(DailyCost dailyCost)
-    {
-        return new DailyDTO(dailyCost.getId(),dailyCost.getPurchaseDate(),dailyCost.getSupermarket(),dailyCost.getType(),
-                dailyCost.getName(),dailyCost.getWeight(),dailyCost.getPrice(),dailyCost.getQuantity(),dailyCost.getMemo());
-    }
 
-    static DailyCost convertToEntity(DailyDTO dailyDTO)
-    {
-        return new DailyCost( dailyDTO.getId(),dailyDTO.getPurchaseDate(),dailyDTO.getSupermarket(),dailyDTO.getType(),
-                dailyDTO.getName(),dailyDTO.getWeight(),dailyDTO.getPrice(), dailyDTO.getQuantity(),dailyDTO.getMemo());
-    }
+    void save(DailyDTO dailyDTO);
 
-    void save(DailyCost dailyCost);
-
-    List<DailyCost> getAll();
-    List<DailyCost> findByDate(LocalDate purchaseDate);
-    List<DailyCost> findByMonthAndYear(int month, int year);
-    List<DailyCost> findBySupermarket(String supermarket);
-    List<DailyCost> findByType(String type);
-    List<DailyCost> findByName(String name);
+    List<DailyDTO> getAll();
+    List<DailyDTO> findByDate(LocalDate purchaseDate);
+    List<DailyDTO> findByMonthAndYear(int month, int year);
+    List<DailyDTO> findBySupermarket(String supermarket);
+    List<DailyDTO> findByType(String type);
+    List<DailyDTO> findByName(String name);
 
     void deleteByID(Long id);
-    DailyCost findByID(Long id);
+    DailyDTO findByID(Long id);
 
 
-    Integer totalAmount(List<DailyCost> dailyCostList);
+    Integer totalAmount(List<DailyDTO> dailyDTOList);
 
-    Integer totalType(List<DailyCost> dailyCostList,String type);
+    Integer totalType(List<DailyDTO> dailyDTOList, String type);
 
-    List<DailyCost> filterByDaily(LocalDate purchaseDate, YearMonth yearMonth, String supermarket, String type, String name);
+    List<DailyDTO> filterByDaily(LocalDate purchaseDate, YearMonth yearMonth, String supermarket, String type, String name);
 
-    Page<DailyCost> getPaginatedDailyList(List<DailyCost> dailyCostList, Pageable pageable);
+    Page<DailyDTO> getPaginatedDailyList(List<DailyDTO> dailyDTOList, Pageable pageable);
 
-    Page<DailyCost> filterByDaily(String purchaseDate, String month, String supermarket, String type, String name, Pageable pageable);
+    Page<DailyDTO> filterByDaily(String purchaseDate, String month, String supermarket, String type, String name, Pageable pageable);
 }
