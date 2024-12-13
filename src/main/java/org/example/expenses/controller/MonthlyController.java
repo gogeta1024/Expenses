@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.expenses.dto.MonthlyDTO;
 import org.example.expenses.entity.MonthlyCost;
 import org.example.expenses.service.MonthlyService;
+import org.example.expenses.utils.FormatUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +28,7 @@ private final MonthlyService monthlyService;
         List<MonthlyCost> monthlyCostList = monthlyService.getAll();
         model.addAttribute("monthlyList", monthlyCostList);
         Integer totalAmount = monthlyService.totalAmount(monthlyCostList);
-        model.addAttribute("total", totalAmount);
+        model.addAttribute("total", FormatUtils.formatPrice(totalAmount));
         return "monthly";
     }
 

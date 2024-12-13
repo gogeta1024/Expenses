@@ -90,7 +90,7 @@
         </form>
 
         <!-- Displaying the dailyList -->
-        <div class="p-2 table-wrapper">
+        <div class="table-wrapper">
             <table class="table">
                 <thead>
                 <tr>
@@ -115,7 +115,7 @@
                     <td th:text="${daily.type}"></td>
                     <td th:text="${daily.name}"></td>
                     <td th:text="${daily.weight}"></td>
-                    <td th:text="${daily.price}"></td>
+                    <td th:text="${daily.priceFormatted}"></td>
                     <td th:text="${daily.quantity}"></td>
                     <td th:text="${daily.formattedPrice}"></td>
                     <td th:text="${daily.memo}"></td>
@@ -139,7 +139,7 @@
                     <!-- Previous Button -->
                     <li class="page-item" th:classappend="${currentPage != null and currentPage == 0} ? 'disabled' : ''">
                         <a class="page-link"
-                        <th:href="@{${'/daily?page=' + (currentPage != null ? currentPage - 1 : 0)}}">
+                        th:href="@{${'/daily?page=' + (currentPage != null ? currentPage - 1 : 0)}}">
                         Previous
                         </a>
                     </li>
@@ -156,7 +156,7 @@
                     <!-- Next Button -->
                     <li class="page-item" th:classappend="${currentPage != null and currentPage == (totalPages != null ? totalPages - 1 : 0)} ? 'disabled' : ''">
                         <a class="page-link"
-                        <th:href="@{${'/total?page=' + (currentPage != null ? currentPage + 1 : 1)}}">
+                        th:href="@{${'/total?page=' + (currentPage != null ? currentPage + 1 : 1)}}">
                         Next
                         </a>
                     </li>

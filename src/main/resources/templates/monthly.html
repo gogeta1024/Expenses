@@ -80,7 +80,7 @@
 
         </form>
 
-        <div class="table-wrapper p-2">
+        <div class="table-wrapper">
             <table class="table">
                 <thead>
                 <tr>
@@ -100,14 +100,13 @@
                 <tr th:each=" monthly : ${monthlyList}">
                     <td th:text="${monthly.id}"></td>
                     <td th:text="${monthly.month}"></td>
-                    <td th:text="${monthly.rent}"></td>
-                    <td th:text="${monthly.electricity}"></td>
-                    <td th:text="${monthly.water}"></td>
-                    <td th:text="${monthly.gas}"></td>
-                    <td th:text="${monthly.sport}"></td>
-                    <td th:text="${monthly.other}"></td>
-                    <td th:text="${monthly.rent + monthly.electricity + monthly.water + monthly.gas + (monthly.sport != null ? monthly.sport : 0) + (monthly.other != null ? monthly.other : 0)}"></td>
-
+                    <td th:text="${monthly.rentFormatted}"></td>
+                    <td th:text="${monthly.electricityFormatted}"></td>
+                    <td th:text="${monthly.waterFormatted}"></td>
+                    <td th:text="${monthly.gasFormatted}"></td>
+                    <td th:text="${monthly.sportFormatted}"></td>
+                    <td th:text="${monthly.otherFormatted}"></td>
+                    <td th:text="${monthly.totalFormatted}"></td>
                     <td>
                         <a href="#" th:href="@{/monthly/edit/{id}(id=${monthly.id})}">
                             Edit</a>
@@ -117,7 +116,8 @@
                     </td>
                 </tr>
                 <tr th:object="${total}">
-                    <th colspan="8" style="text-align:center">Tổng Tiền</th>
+                    <th></th>
+                    <th colspan="7" style="text-align:center">Tổng Tiền</th>
                     <th th:text="${total}"></th>
                     <th></th>
                 </tr>

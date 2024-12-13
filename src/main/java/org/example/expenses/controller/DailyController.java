@@ -3,6 +3,7 @@ package org.example.expenses.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.service.DailyService;
+import org.example.expenses.utils.FormatUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,7 +53,7 @@ public class DailyController {
         model.addAttribute("currentPage", dailyPage.getNumber());
 
         Integer totalAmount = dailyService.totalAmount(dailyDTOList);
-        model.addAttribute("total", totalAmount);
+        model.addAttribute("total", FormatUtils.formatPrice(totalAmount));
 
 
         return "daily";

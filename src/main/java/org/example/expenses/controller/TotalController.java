@@ -7,6 +7,7 @@ import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.entity.MonthlyCost;
 import org.example.expenses.service.DailyService;
 import org.example.expenses.service.MonthlyService;
+import org.example.expenses.utils.FormatUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,19 +30,19 @@ public class TotalController {
     public void data(List<DailyDTO> dailyDTOList, List<MonthlyCost> monthlyCostList, Model model)
     {
         Integer total1 = dailyService.totalAmount(dailyDTOList);
-        model.addAttribute("total1", total1);
+        model.addAttribute("total1", FormatUtils.formatPrice(total1));
 
         Integer total2 = monthlyService.totalAmount(monthlyCostList);
-        model.addAttribute("total2", total2);
+        model.addAttribute("total2", FormatUtils.formatPrice(total2));
 
         Integer totalFood = dailyService.totalType(dailyDTOList,"Thực Phẩm");
         Integer totalItem = dailyService.totalType(dailyDTOList,"Đồ Dùng");
         Integer totalMedical = dailyService.totalType(dailyDTOList,"Thuốc");
         Integer totalClothing = dailyService.totalType(dailyDTOList,"Quần Áo");
-        model.addAttribute("totalFood", totalFood);
-        model.addAttribute("totalItem", totalItem);
-        model.addAttribute("totalMedical", totalMedical);
-        model.addAttribute("totalClothing", totalClothing);
+        model.addAttribute("totalFood", FormatUtils.formatPrice(totalFood));
+        model.addAttribute("totalItem", FormatUtils.formatPrice(totalItem));
+        model.addAttribute("totalMedical", FormatUtils.formatPrice(totalMedical));
+        model.addAttribute("totalClothing", FormatUtils.formatPrice(totalClothing));
 
         int foodPercentage = (total1 !=null && totalFood != null && total1 > 0 && totalFood > 0) ?  Math.round((float) (totalFood * 100) /total1) : 0;
         int itemPercentage = (total1 !=null && totalItem != null && total1 > 0 && totalItem > 0) ?   Math.round((float) (totalItem * 100) /total1) : 0;

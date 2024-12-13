@@ -1,6 +1,7 @@
 HELP.md
 #Dockerfile
 .dockerignore
+src/main/resources/application.properties
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/

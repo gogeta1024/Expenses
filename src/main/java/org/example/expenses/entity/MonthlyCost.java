@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.expenses.utils.FormatUtils;
 
 import java.time.YearMonth;
 
@@ -40,4 +41,34 @@ public class MonthlyCost {
 
     @Column(name = "other") // Chi phí khác
     private Integer other;
+
+    public String getRentFormatted()
+    {
+        return FormatUtils.formatPrice(rent);
+    }
+    public String getElectricityFormatted()
+    {
+        return FormatUtils.formatPrice(electricity);
+    }
+    public String getWaterFormatted()
+    {
+        return FormatUtils.formatPrice(water);
+    }
+    public String getGasFormatted()
+    {
+        return FormatUtils.formatPrice(gas);
+    }
+    public String getSportFormatted()
+    {
+        return FormatUtils.formatPrice(sport);
+    }
+    public String getOtherFormatted()
+    {
+        return FormatUtils.formatPrice(other);
+    }
+    public String getTotalFormatted()
+    {
+        Integer total = rent + electricity + water + gas + (sport != null ? sport : 0) + (other != null ? other : 0);
+        return FormatUtils.formatPrice(total);
+    }
 }

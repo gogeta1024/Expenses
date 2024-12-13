@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.expenses.utils.FormatUtils;
 
 import java.time.YearMonth;
 
@@ -27,5 +28,6 @@ public class MonthlyDTO
     private Integer gas;
     private Integer sport;
     private Integer other;
+
 
 }

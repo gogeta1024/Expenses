@@ -10,9 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,15 +49,22 @@ public class DailyServiceImpl implements DailyService {
         if (dailyCost.getPrice() != null && dailyCost.getQuantity() != null && dailyCost.getQuantity() != 0) {
             double unitPrice = (double) dailyCost.getPrice() / dailyCost.getQuantity();
 
+            // Sử dụng NumberFormat để hiển thị dấu phân cách hàng nghìn
+            NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+            numberFormat.setMaximumFractionDigits(2);
+            numberFormat.setMinimumFractionDigits(0); // Để không hiển thị .00 nếu không cần thiết
+
             // Kiểm tra phần thập phân, nếu không có phần thập phân thì chỉ hiển thị số nguyên
             if (unitPrice == Math.floor(unitPrice)) {
-                // Nếu chia hết (phần thập phân = 0), hiển thị số nguyên
-                dailyDTO.setFormattedPrice(String.format("%d", (int) unitPrice));
+                // Nếu chia hết (phần thập phân = 0), hiển thị số nguyên với dấu phân cách hàng nghìn
+                dailyDTO.setFormattedPrice(numberFormat.format((int) unitPrice));
             } else {
-                // Nếu có phần thập phân, hiển thị với 2 chữ số thập phân
-                dailyDTO.setFormattedPrice(String.format("%.2f", unitPrice));
+                // Nếu có phần thập phân, hiển thị với 2 chữ số thập phân và dấu phân cách hàng nghìn
+                dailyDTO.setFormattedPrice(numberFormat.format(unitPrice));
             }
-        } else {
+        }
+
+        else {
             dailyDTO.setFormattedPrice("0"); // Giá trị mặc định nếu không đủ thông tin
         }
 

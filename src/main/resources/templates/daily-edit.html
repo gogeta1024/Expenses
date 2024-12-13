@@ -90,54 +90,6 @@
 
         </form>
 
-        <div class="table-wrapper p-2">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">No</th>
-                    <th scope="col">Ngày</th>
-                    <th scope="col">Siêu Thị</th>
-                    <th scope="col">Loại</th>
-                    <th scope="col">Tên</th>
-                    <th scope="col">KL(gam)</th>
-                    <th scope="col">Giá</th>
-                    <th scope="col">SL</th>
-                    <th scope="col">Giá/SL</th>
-                    <th scope="col">Memo</th>
-                    <th scope="col">Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each=" daily : ${dailyList}">
-                    <td th:text="${daily.id}"></td>
-                    <td th:text="${daily.purchaseDate}"></td>
-                    <td th:text="${daily.supermarket}"></td>
-                    <td th:text="${daily.type}"></td>
-                    <td th:text="${daily.name}"></td>
-                    <td th:text="${daily.weight}"></td>
-                    <td th:text="${daily.price}"></td>
-                    <td th:text="${daily.quantity}"></td>
-                    <td th:text="${daily.price != null && daily.quantity != null ? daily.price * daily.quantity : 0}"></td>
-                    <td th:text="${daily.memo}"></td>
-                    <td>
-                        <a href="#" th:href="@{/daily/edit/{id}(id=${daily.id})}">
-                            Edit</a>
-                        <a href="#"
-                           th:href="@{/daily/delete/{id}(id=${daily.id})}"
-                           onclick="return confirmDelete();">Delete</a>
-                    </td>
-                </tr>
-                <tr th:object="${total}">
-                    <th></th>
-                    <th colspan="5" style="text-align:center">Tổng Tiền</th>
-                    <th th:text="${total}"></th>
-                    <th></th>
-                </tr>
-                </tbody>
-            </table>
-
-
-        </div>
 
     </div>
     <footer>
