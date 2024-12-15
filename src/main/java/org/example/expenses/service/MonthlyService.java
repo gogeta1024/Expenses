@@ -1,7 +1,12 @@
 package org.example.expenses.service;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.entity.MonthlyCost;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface MonthlyService {
@@ -20,5 +25,7 @@ public interface MonthlyService {
 
     MonthlyCost findByID(Long id);
 
+    Page<MonthlyCost> findAll(Pageable pageable);
+    void exportMonthlyListToCsv(List<MonthlyCost> monthlyCostList, HttpServletResponse response) throws IOException;
 
 }

@@ -1,10 +1,12 @@
 package org.example.expenses.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.entity.DailyCost;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -33,4 +35,6 @@ public interface DailyService {
     Page<DailyDTO> getPaginatedDailyList(List<DailyDTO> dailyDTOList, Pageable pageable);
 
     Page<DailyDTO> filterByDaily(String purchaseDate, String month, String supermarket, String type, String name, Pageable pageable);
+
+    void exportDailyListToCsv(List<DailyDTO> dailyDTOList, HttpServletResponse response) throws IOException;
 }

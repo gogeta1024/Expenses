@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
+@Repository("dailyRepository")
 public interface DailyRepository extends JpaRepository<DailyCost, Long> {
 
     // Tìm kiếm theo purchaseDate

@@ -69,7 +69,7 @@
             <span class="text-danger" th:text="${error1}"></span>
         </form>
 
-        <div class="content p-2">
+        <div class="p-2">
             <table class="table">
                 <tr th:object="${total1}">
                     <th></th>
@@ -101,8 +101,25 @@
                     <td th:text="${totalClothing}"></td>
                     <td th:text="${clothingPercentage+ ' %'}"></td>
                 </tr>
+                <tr th:object="${total2}">
+                    <th></th>
+                    <th colspan="7" style="text-align:center">Tổng Tháng</th>
+                    <th th:text="${total2}"></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th colspan="7" style="text-align:center">Tổng toàn bộ</th>
+                    <th th:text="${totalAll}"></th>
+                </tr>
+
             </table>
+
+
         </div>
+        <!-- Nút tải xuống CSV -->
+        <a href="#" th:href="@{/total/download/dailyList}" class="btn btn-primary">Download CSV</a>
+
         <!-- Displaying the dailyList -->
         <div class="table-wrapper">
             <table class="table">
@@ -145,32 +162,33 @@
             <div class="pagination">
                 <ul class="pagination justify-content-center">
                     <!-- Previous Button -->
-                    <li class="page-item" th:classappend="${currentPage != null and currentPage == 0} ? 'disabled' : ''">
+                    <li class="page-item" th:classappend="${currentDailyPage != null and currentDailyPage == 0} ? 'disabled' : ''">
                         <a class="page-link"
-                        th:href="@{${searching != true ? '/total?page=' + (currentPage != null ? currentPage - 1 : 0) : '/total/search?page=' + (currentPage != null ? currentPage - 1 : 0)}}">
+                        th:href="@{${searching != true ? '/total?pageDaily=' + (currentDailyPage != null ? currentDailyPage - 1 : 0) : '/total/search?pageDaily=' + (currentDailyPage != null ? currentDailyPage - 1 : 0)}}">
                         Previous
                         </a>
                     </li>
 
                     <!-- Page Numbers -->
                     <li class="page-item"
-                        th:each="i : ${#numbers.sequence(0, totalPages != null ? totalPages - 1 : 0)}"
-                        th:classappend="${currentPage != null and i == currentPage} ? 'active' : ''">
+                        th:each="i : ${#numbers.sequence(0, totalDailyPages != null ? totalDailyPages - 1 : 0)}"
+                        th:classappend="${currentDailyPage != null and i == currentDailyPage} ? 'active' : ''">
                         <a class="page-link"
-                           th:href="@{${searching != true ? '/total?page=' + i : '/total/search?page=' + i}}"
+                           th:href="@{${searching != true ? '/total?pageDaily=' + i : '/total/search?pageDaily=' + i}}"
                            th:text="${i + 1}"></a>
                     </li>
 
                     <!-- Next Button -->
-                    <li class="page-item" th:classappend="${currentPage != null and currentPage == (totalPages != null ? totalPages - 1 : 0)} ? 'disabled' : ''">
+                    <li class="page-item" th:classappend="${currentDailyPage != null and currentDailyPage == (totalDailyPages != null ? totalDailyPages - 1 : 0)} ? 'disabled' : ''">
                         <a class="page-link"
-                        th:href="@{${searching != true ? '/total?page=' + (currentPage != null ? currentPage + 1 : 1) : '/total/search?page=' + (currentPage != null ? currentPage + 1 : 1)}}">
+                        th:href="@{${searching != true ? '/total?pageDaily=' + (currentDailyPage != null ? currentDailyPage + 1 : 1) : '/total/search?pageDaily=' + (currentDailyPage != null ? currentDailyPage + 1 : 1)}}">
                         Next
                         </a>
                     </li>
                 </ul>
             </div>
 
+            <a href="#" th:href="@{/total/download/monthlyList}" class="btn btn-primary">Download CSV</a>
             <table class="table">
                 <thead>
                 <tr>
@@ -205,24 +223,38 @@
                            onclick="return confirmDelete();">Delete</a>
                     </td>
                 </tr>
-                <tr th:object="${total2}">
-                    <th></th>
-                    <th colspan="7" style="text-align:center">Tổng Tháng</th>
-                    <th th:text="${total2}"></th>
-                    <th></th>
-                </tr>
                 </tbody>
             </table>
 
-            <table class="table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th style="text-align:center">Tổng toàn bộ</th>
-                    <th th:text="${(total1 != null and total2 != null) ? total1 + total2 : 0}"></th>
-                </tr>
-                </thead>
-            </table>
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Button -->
+                    <li class="page-item" th:classappend="${currentMonthlyPage != null and currentMonthlyPage == 0} ? 'disabled' : ''">
+                        <a class="page-link"
+                           th:href="@{${searching != true ? '/total?pageMonthly=' + (currentMonthlyPage != null ? currentMonthlyPage - 1 : 0) : '/total/search?pageMonthly=' + (currentMonthlyPage != null ? currentMonthlyPage - 1 : 0)}}">
+                            Previous
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalMonthlyPages != null ? totalMonthlyPages - 1 : 0)}"
+                        th:classappend="${currentMonthlyPage != null and i == currentMonthlyPage} ? 'active' : ''">
+                        <a class="page-link"
+                           th:href="@{${searching != true ? '/total?pageMonthly=' + i : '/total/search?pageMonthly=' + i}}"
+                           th:text="${i + 1}"></a>
+                    </li>
+
+                    <!-- Next Button -->
+                    <li class="page-item" th:classappend="${currentMonthlyPage != null and currentMonthlyPage == (totalMonthlyPages != null ? totalMonthlyPages - 1 : 0)} ? 'disabled' : ''">
+                        <a class="page-link"
+                           th:href="@{${searching != true ? '/total?pageMonthly=' + (currentMonthlyPage != null ? currentMonthlyPage + 1 : 1) : '/total/search?pageMonthly=' + (currentMonthlyPage != null ? currentDailyPage + 1 : 1)}}">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
 
     </div>

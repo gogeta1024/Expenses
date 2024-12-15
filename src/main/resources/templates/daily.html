@@ -156,7 +156,7 @@
                     <!-- Next Button -->
                     <li class="page-item" th:classappend="${currentPage != null and currentPage == (totalPages != null ? totalPages - 1 : 0)} ? 'disabled' : ''">
                         <a class="page-link"
-                        th:href="@{${'/total?page=' + (currentPage != null ? currentPage + 1 : 1)}}">
+                        th:href="@{${'/daily?page=' + (currentPage != null ? currentPage + 1 : 1)}}">
                         Next
                         </a>
                     </li>

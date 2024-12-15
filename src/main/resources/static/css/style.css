@@ -111,7 +111,7 @@ th, td {
 
     table {
         table-layout: auto; /* Cho phép bảng tự động điều chỉnh kích thước */
-        width: auto; /* Bảng chiếm đầy chiều rộng wrapper */
+        /*width: auto;*/ /* Bảng chiếm đầy chiều rộng wrapper */
         border-collapse: collapse; /* Gộp viền ô */
         word-wrap: break-word; /* Cho nội dung dài tự xuống dòng */
         font-size: 0.96rem; /* Giảm kích thước chữ */
@@ -119,17 +119,15 @@ th, td {
 
     .content {
         order: 1; /* Đảm bảo content hiển thị trước */
-        overflow-y: auto;
+       /* overflow-y: auto;*/
     }
 
     .table-wrapper {
         /*overflow-x: auto;
         -webkit-overflow-scrolling: touch; *//**//* Cuộn mượt trên di động */
-/*        width: auto; *//* Đảm bảo không tràn màn hình */
-        transform-origin: top left;
-        transform: scale(0.6); *//* Thu nhỏ bảng */
-        width:600px;
-        height: 600px;
+       transform-origin: top left;
+        transform: scale(0.6);
+        height:600px;
     }
 
         td, th {

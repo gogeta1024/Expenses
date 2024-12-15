@@ -1,16 +1,24 @@
 package org.example.expenses.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.expenses.dto.DailyDTO;
 import org.example.expenses.entity.DailyCost;
 import org.example.expenses.repository.DailyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.text.DecimalFormat;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -20,10 +28,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class DailyServiceImpl implements DailyService {
 
     private final DailyRepository dailyRepository;
+
+    @Autowired
+    public DailyServiceImpl(DailyRepository dailyRepository)
+    {
+        this.dailyRepository = dailyRepository;
+    }
+
     List<DailyCost> dailyCostList;
     List<DailyDTO> dailyDTOList;
 
@@ -216,6 +230,45 @@ public class DailyServiceImpl implements DailyService {
         Page<DailyCost> dailyCosts = dailyRepository.findByCriteria(purchaseDate, month, supermarket, type, name, pageable);
         // Sử dụng map để chuyển đổi từ DailyCost sang DailyDTO
         return dailyCosts.map(this::convertToDTO);
+    }
+
+    @Override
+    public void exportDailyListToCsv(List<DailyDTO> dailyDTOList, HttpServletResponse response) throws IOException {
+        // Đặt kiểu nội dung và header cho file CSV
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=daily_list.csv");
+
+        // Sử dụng try-with-resources để đảm bảo tài nguyên được giải phóng
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8))) {
+            // Ghi BOM (Byte Order Mark) để hiển thị đúng tiếng Việt trong Excel
+            writer.write('\uFEFF');
+
+            // Ghi header CSV
+            writer.println("ID,Purchase Date,Supermarket,Type,Name,Weight,Price,Quantity,Memo");
+
+            // Ghi dữ liệu từng dòng
+            if (dailyDTOList != null && !dailyDTOList.isEmpty()) {
+                for (DailyDTO daily : dailyDTOList) {
+                    writer.println(String.join(",",
+                            daily.getId() != null ? String.valueOf(daily.getId()) : "",
+                            daily.getPurchaseDate() != null ? daily.getPurchaseDate().toString() : "",
+                            daily.getSupermarket() != null ? daily.getSupermarket() : "",
+                            daily.getType() != null ? daily.getType() : "",
+                            daily.getName() != null ? daily.getName() : "",
+                            daily.getWeight() != null ? daily.getWeight().toString() : "",
+                            daily.getPrice() != null ? daily.getPrice().toString() : "",
+                            daily.getQuantity() != null ? daily.getQuantity().toString() : "",
+                            daily.getMemo() != null ? daily.getMemo() : ""
+                    ));
+                }
+            } else {
+                // Nếu danh sách rỗng, ghi dòng thông báo
+                writer.println("No data available");
+            }
+            writer.flush();
+        } catch (IOException e) {
+            throw new IOException("Error occurred while exporting CSV", e);
+        }
     }
 
 

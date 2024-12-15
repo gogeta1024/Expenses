@@ -123,6 +123,35 @@
                 </tr>
                 </tbody>
             </table>
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Button -->
+                    <li class="page-item" th:classappend="${currentMonthlyPage != null and currentMonthlyPage == 0} ? 'disabled' : ''">
+                        <a class="page-link"
+                           th:href="@{${'/monthly?pageMonthly=' + (currentMonthlyPage != null ? currentMonthlyPage - 1 : 0)}}">
+                            Previous
+                        </a>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalMonthlyPages != null ? totalMonthlyPages - 1 : 0)}"
+                        th:classappend="${currentMonthlyPage != null and i == currentMonthlyPage} ? 'active' : ''">
+                        <a class="page-link"
+                           th:href="@{${'/monthly?pageMonthly=' + i}}"
+                           th:text="${i + 1}"></a>
+                    </li>
+
+                    <!-- Next Button -->
+                    <li class="page-item" th:classappend="${currentMonthlyPage != null and currentMonthlyPage == (totalMonthlyPages != null ? totalMonthlyPages - 1 : 0)} ? 'disabled' : ''">
+                        <a class="page-link"
+                           th:href="@{${'/monthly?pageMonthly=' + (currentMonthlyPage != null ? currentMonthlyPage + 1 : 1)}}">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
 
         </div>

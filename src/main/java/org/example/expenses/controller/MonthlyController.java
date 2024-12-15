@@ -7,6 +7,10 @@ import org.example.expenses.entity.MonthlyCost;
 import org.example.expenses.service.MonthlyService;
 import org.example.expenses.utils.FormatUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,10 +27,18 @@ public class MonthlyController {
 private final MonthlyService monthlyService;
 
     @GetMapping
-    public String monthly(Model model) {
+    public String monthly( @RequestParam(value = "pageMonthly", defaultValue = "0") int pageMonthly,
+                           @RequestParam(value = "size", defaultValue = "10") int size,
+                           Model model) {
         model.addAttribute("monthly",new MonthlyCost());
         List<MonthlyCost> monthlyCostList = monthlyService.getAll();
-        model.addAttribute("monthlyList", monthlyCostList);
+
+        Pageable pageableMonthly = PageRequest.of(pageMonthly,size, Sort.by("month").descending());
+        Page<MonthlyCost> monthlyPage = monthlyService.findAll(pageableMonthly);
+        model.addAttribute("monthlyList", monthlyPage.getContent());
+        model.addAttribute("totalMonthlyPages", monthlyPage.getTotalPages());
+        model.addAttribute("currentMonthlyPage", monthlyPage.getNumber());
+
         Integer totalAmount = monthlyService.totalAmount(monthlyCostList);
         model.addAttribute("total", FormatUtils.formatPrice(totalAmount));
         return "monthly";
